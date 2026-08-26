@@ -24,24 +24,28 @@
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <label class="form-label fw-semibold">Auteur</label>
-                    <select name="auteur_id" class="form-select @error('auteur_id') is-invalid @enderror">
-                        <option value="">-- Choisir un auteur --</option>
+                    <input list="auteurs-list" name="auteur_nom" class="form-control @error('auteur_nom') is-invalid @enderror"
+                           value="{{ old('auteur_nom') }}" placeholder="Tapez ou choisissez un auteur" autocomplete="off">
+                    <datalist id="auteurs-list">
                         @foreach($auteurs as $a)
-                            <option value="{{ $a->id }}" {{ old('auteur_id') == $a->id ? 'selected' : '' }}>{{ $a->nom }}</option>
+                            <option value="{{ $a->nom }}">
                         @endforeach
-                    </select>
-                    @error('auteur_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    </datalist>
+                    <small class="text-muted">Tapez un nouveau nom pour créer un auteur automatiquement.</small>
+                    @error('auteur_nom') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                 </div>
 
                 <div class="col-md-6 mb-3">
                     <label class="form-label fw-semibold">Catégorie</label>
-                    <select name="categorie_id" class="form-select @error('categorie_id') is-invalid @enderror">
-                        <option value="">-- Choisir une catégorie --</option>
+                    <input list="categories-list" name="categorie_nom" class="form-control @error('categorie_nom') is-invalid @enderror"
+                           value="{{ old('categorie_nom') }}" placeholder="Tapez ou choisissez une catégorie" autocomplete="off">
+                    <datalist id="categories-list">
                         @foreach($categories as $cat)
-                            <option value="{{ $cat->id }}" {{ old('categorie_id') == $cat->id ? 'selected' : '' }}>{{ $cat->nom }}</option>
+                            <option value="{{ $cat->nom }}">
                         @endforeach
-                    </select>
-                    @error('categorie_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    </datalist>
+                    <small class="text-muted">Tapez un nouveau nom pour créer une catégorie automatiquement.</small>
+                    @error('categorie_nom') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                 </div>
             </div>
 

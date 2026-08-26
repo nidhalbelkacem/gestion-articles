@@ -48,28 +48,29 @@ class ArticleController extends Controller
     }
 
     /**
-     * Enregistre un nouvel article
+     * Enregistre un nouvel article.
+     * Si l'auteur ou la catégorie tapés n'existent pas encore, ils sont créés automatiquement.
      */
     public function store(Request $request)
     {
         $request->validate([
             'titre' => 'required|string|max:255',
-            'auteur_id' => 'required|exists:auteurs,id',
-            'categorie_id' => 'required|exists:categories,id',
+            'auteur_nom' => 'required|string|max:255',
+            'categorie_nom' => 'required|string|max:255',
             'contenu' => 'nullable|string',
         ]);
 
-        Article::create($request->all());
+        $auteur = Auteur::firstOrCreate(['nom' => trim($request->auteur_nom)]);
+        $categorie = Categorie::firstOrCreate(['nom' => trim($request->categorie_nom)]);
+
+        Article::create([
+            'titre' => $request->titre,
+            'contenu' => $request->contenu,
+            'auteur_id' => $auteur->id,
+            'categorie_id' => $categorie->id,
+        ]);
 
         return redirect()->route('articles.index')->with('success', 'Article ajouté avec succès.');
-    }
-
-    /**
-     * Affiche un article spécifique (non utilisé ici, mais requis par le resource controller)
-     */
-    public function show(Article $article)
-    {
-        return view('articles.show', compact('article'));
     }
 
     /**
@@ -81,5 +82,41 @@ class ArticleController extends Controller
         $auteurs = Auteur::all();
 
         return view('articles.edit', compact('article', 'categories', 'auteurs'));
+    }
+
+    /**
+     * Met à jour un article existant.
+     * Si l'auteur ou la catégorie tapés n'existent pas encore, ils sont créés automatiquement.
+     */
+    public function update(Request $request, Article $article)
+    {
+        $request->validate([
+            'titre' => 'required|string|max:255',
+            'auteur_nom' => 'required|string|max:255',
+            'categorie_nom' => 'required|string|max:255',
+            'contenu' => 'nullable|string',
+        ]);
+
+        $auteur = Auteur::firstOrCreate(['nom' => trim($request->auteur_nom)]);
+        $categorie = Categorie::firstOrCreate(['nom' => trim($request->categorie_nom)]);
+
+        $article->update([
+            'titre' => $request->titre,
+            'contenu' => $request->contenu,
+            'auteur_id' => $auteur->id,
+            'categorie_id' => $categorie->id,
+        ]);
+
+        return redirect()->route('articles.index')->with('success', 'Article modifié avec succès.');
+    }
+
+    /**
+     * Supprime un article
+     */
+    public function destroy(Article $article)
+    {
+        $article->delete();
+
+        return redirect()->route('articles.index')->with('success', 'Article supprimé.');
     }
 }
