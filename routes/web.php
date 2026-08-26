@@ -1,27 +1,21 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\CategorieController;
+use App\Http\Controllers\AuteurController;
 use Illuminate\Support\Facades\Route;
 
+// Page d'accueil : redirige vers les articles
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('articles.index');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+// Routes protégées : accessibles uniquement si connecté
+Route::middleware(['auth'])->group(function () {
+    Route::resource('articles', ArticleController::class);
+    Route::resource('categories', CategorieController::class);
+    Route::resource('auteurs', AuteurController::class);
 });
 
+// Routes d'authentification (login, register, logout, etc.)
 require __DIR__.'/auth.php';
-
-Auth::routes();
-
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-
-
-Route::resource('articles', App\Http\Controllers\ArticleController::class);
